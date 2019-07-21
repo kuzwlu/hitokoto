@@ -2,7 +2,7 @@
 // 获取句子文件的绝对路径
 // 如果你介意别人可能会拖走这个文本，可以把文件名自定义一下，或者通过Nginx禁止拉取也行。
 $path = dirname(__FILE__);
-$file = file($path."/oneword.txt");
+$file = file($path."/data.txt");
  
 # 随机读取一行
 $arr  = mt_rand( 0, count( $file ) - 1 );
