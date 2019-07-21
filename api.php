@@ -1,24 +1,27 @@
 <?php
-// 存储数据的文件
-$filename = 'data.dat';        
+// 获取句子文件的绝对路径
+// 如果你介意别人可能会拖走这个文本，可以把文件名自定义一下，或者通过Nginx禁止拉取也行。
+$path = dirname(__FILE__);
+$file = file($path."/oneword.txt");
  
-// 指定页面编码
-header('Content-type: text/html; charset=utf-8');
+# 随机读取一行
+$arr  = mt_rand( 0, count( $file ) - 1 );
+$content  = trim($file[$arr]);
  
-if(!file_exists($filename)) {
-    die($filename . ' 数据文件不存在');
+# 编码判断，用于输出相应的响应头部编码
+if (isset($_GET['charset']) && !empty($_GET['charset'])) {
+    $charset = $_GET['charset'];
+    if (strcasecmp($charset,"gbk") == 0 ) {
+        $content = mb_convert_encoding($content,'gbk', 'utf-8');
+    }
+} else {
+    $charset = 'utf-8';
 }
+header("Content-Type: text/html; charset=$charset");
  
-// 读取整个数据文件
-$data = file_get_contents($filename);
- 
-// 按换行符分割成数组
-$data = explode(PHP_EOL, $data);
- 
-// 随机获取一行索引
-$result = $data[array_rand($data)];
- 
-// 去除多余的换行符（保险起见）
-$result = str_replace(array("\r","\n","\r\n"), '', $result);
- 
-echo $result;
+# 格式化判断，输出js或纯文本
+if ($_GET['format'] === 'js') {
+    echo "function oneword(){document.write('" . $content ."');}";
+} else {
+    echo $content;
+}
